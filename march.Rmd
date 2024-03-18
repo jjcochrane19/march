@@ -1,0 +1,48 @@
+---
+title: "march"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+```
+
+```{r}
+# data from https://www.kaggle.com/datasets/nishaanamin/march-madness-data
+
+conference = read.csv("archive/Conference Stats.csv")
+
+file_names = c(
+    "archive/538 Ratings.csv",
+    "archive/Barttorvik Away-Neutral.csv"
+    )
+
+dfs = lapply(file_names, read.csv)
+
+dfs = dfs[-5]
+
+master = dfs[[1]]
+
+for (i in 2:length(dfs)) {
+    master = full_join(master, dfs[[i]], by = intersect(names(master), names(dfs[[i]])))
+}
+
+test = master%>%
+  arrange(TEAM.ID)%>%
+  filter(YEAR == 2024)%>%
+  select(-c(POWER.RATING.RANK, POWER.RATING, TEAM.NO))%>%
+  drop_na()
+
+train = master%>%
+  arrange(TEAM.ID)%>%
+  filter(YEAR != 2024)%>%
+  select(-c(POWER.RATING.RANK, POWER.RATING, TEAM.NO))%>%
+  drop_na()
+
+write.csv(train, file = "train.csv")
+write.csv(test, file = "test.csv")
+
+train$ROUND
+```
