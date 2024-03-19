@@ -54,3 +54,10 @@ for i, classifier in enumerate(classifiers):
 
 print("Best classifier:", best_classifier)
 print("Best accuracy:", best_accuracy)
+
+X_predict_scaled = scaler.transform(X_predict)
+preds = best_classifier.predict(X_predict_scaled)
+
+test_info["PREDICTED_ROUND"] = preds
+
+test_info.to_csv("preds.csv")
